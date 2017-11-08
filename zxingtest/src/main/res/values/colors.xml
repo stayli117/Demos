@@ -3,4 +3,37 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="white">#ffffff</color>
+
+    <color name="background">#F5F5F5</color>
+    <color name="essential">#2979FF</color>
+    <color name="complementary">#2A982F</color>
+    <color name="divider">#CED7DB</color>
+    <color name="text_black">#232627</color>
+    <color name="text_gray">#575E62</color>
+    <color name="text_tips">#7C858A</color>
+    <color name="text_nochoice">#99A3A9</color>
+    <color name="user_background">#4187FD</color>
+    <color name="encry_button">#e5efff</color>
+    <color name="item_shape">#d1d1d1</color>
+    <color name="wait_background">#99000000</color>
+
+
+    <!-- 主题色 -->
+    <color name="themeColor">#2979FF</color>
+
+
+    <color name="ripple_background">#333F51B5</color>
+    <color name="whiteColor">#fff</color>
+    <!-- 背景色 -->
+    <color name="bgColor">#f1f1f1</color>
+    <!-- 扫码需要 -->
+    <color name="possible_result_points">#c0ffff00</color>
+    <color name="result_view">#b0000000</color>
+    <color name="viewfinder_frame">#ff000000</color>
+    <color name="viewfinder_laser">#ffff0000</color>
+    <color name="viewfinder_mask">#60000000</color>
+
+    <color name="black_overlay">#66000000</color>
+
 </resources>

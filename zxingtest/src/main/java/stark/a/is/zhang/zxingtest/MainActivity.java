@@ -1,15 +1,17 @@
 package stark.a.is.zhang.zxingtest;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.BinaryBitmap;
@@ -46,6 +48,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mScanButton.setEnabled(false);
 
         mImageView = (ImageView) findViewById(R.id.zxing_code_view);
+        mImageView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                scanQRCode();
+                return false;
+            }
+        });
     }
 
     @Override
@@ -56,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
             case R.id.scan:
-                scanQRCode();
+                startActivity(new Intent(this, CaptureActivity.class));
                 break;
         }
     }
@@ -81,7 +90,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private int[] generatePixels() {
         String data = createData();
-
         int[] pixels = null;
 
         Hashtable<EncodeHintType, Object> hints = new Hashtable<>();
@@ -123,7 +131,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     //may change it later
     private void scanQRCode() {
-        Bitmap bitmap = ((BitmapDrawable)mImageView.getDrawable()).getBitmap();
+        Bitmap bitmap = ((BitmapDrawable) mImageView.getDrawable()).getBitmap();
 
         Matrix matrix = new Matrix();
         matrix.postScale(0.2f, 0.2f);
@@ -147,11 +155,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         try {
             Result result = new MultiFormatReader().decode(binaryBitmap, hints);
-
             try {
                 JSONObject jsonObject = new JSONObject(result.getText());
                 String name = jsonObject.getString("author");
                 String url = jsonObject.getString("url");
+                Toast.makeText(this, "扫描成功", Toast.LENGTH_SHORT).show();
                 Log.d("ZJTest", "name: " + name + ", url: " + url);
             } catch (JSONException e) {
                 Log.d("ZJTest", e.toString());

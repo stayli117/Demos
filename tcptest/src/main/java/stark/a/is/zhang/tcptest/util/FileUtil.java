@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
+import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -16,6 +17,7 @@ public class FileUtil {
         Map<String, String> infoMap = new HashMap<>();
 
         File file = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        Log.e("FilePath", "getPictureInfoMap: "+file.getAbsolutePath() );
         if (file != null && file.exists()) {
             getInfo(file, infoMap);
         }
@@ -32,7 +34,7 @@ public class FileUtil {
                     getInfo(child, infoMap);
                 }
             } else {
-                if(file.getName().endsWith(".jpg")) {
+                if(file.getName().endsWith(".jpg") || file.getName().endsWith(".png")) {
                     infoMap.put(file.getAbsolutePath(), file.getName());
                 }
             }

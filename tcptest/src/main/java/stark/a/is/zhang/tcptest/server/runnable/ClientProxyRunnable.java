@@ -50,7 +50,6 @@ public class ClientProxyRunnable implements Runnable {
     public void run() {
         while (!mQuit) {
             String msg = NetworkUtil.getStringFromSocket(mSocket);
-
             if (msg == null || msg.length() <= 0) {
                 judgeForQuit();
                 continue;
@@ -139,7 +138,10 @@ public class ClientProxyRunnable implements Runnable {
     private void transferDataToClient() {
         try {
             DataOutputStream dataOutputStream = new DataOutputStream(mSocket.getOutputStream());
-
+            if (mPictureInfo == null) {
+                Log.e(TAG, "transferDataToClient: " + mPictureInfo);
+                return;
+            }
             Set<String> pathList = mPictureInfo.keySet();
 
             for (String path : pathList) {

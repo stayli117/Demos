@@ -39,11 +39,18 @@ public class DownloadRunnable implements Runnable {
             printWriter.flush();
 
             String pictureSize = NetworkUtil.getStringFromSocket(socket);
+
+            Log.e(TAG, "run: " + pictureSize);
             int size = Integer.parseInt(pictureSize);
 
             if (size > 0) {
+//                socket = new Socket();
+//                socket.connect(NetworkUtil.createTcpSocketAddress(mServerIp));
+//                printWriter = NetworkUtil.getSocketPrintWriter(socket);
                 downloadThumbnail(printWriter, socket, size);
             }
+
+
         } catch (IOException e) {
             Log.d(TAG, e.toString());
         } finally {
@@ -57,11 +64,14 @@ public class DownloadRunnable implements Runnable {
                 Log.d(TAG, e.toString());
             }
         }
+
+
     }
 
     private void downloadThumbnail(PrintWriter printWriter, Socket socket, int num) {
         printWriter.write(NetworkUtil.GET_THUMB_NAIL);
         printWriter.flush();
+
 
         for (int i = 0; i < num; ++i) {
             try {

@@ -6,14 +6,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
+import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -31,15 +33,16 @@ public class MainActivity extends AppCompatActivity {
     private WifiManager mWifiManager;
     private Handler mMainHandler;
     private boolean mHasPermission;
+    private WiFiReceiver receiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //registerBroadcastReceiver();
+        registerBroadcastReceiver();
 
-        mWifiManager = (WifiManager)getSystemService(WIFI_SERVICE);
+        mWifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
         mMainHandler = new Handler();
 
         findChildViews();
@@ -50,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
         if (!mHasPermission) {
             requestPermission();
         }
+
+
     }
 
     Button mOpenWifiButton;
@@ -57,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
     RecyclerView mWifiInfoRecyclerView;
 
     private void findChildViews() {
-        mOpenWifiButton = (Button)findViewById(R.id.open_wifi);
+        mOpenWifiButton = (Button) findViewById(R.id.open_wifi);
         mGetWifiInfoButton = (Button) findViewById(R.id.get_wifi_info);
         mWifiInfoRecyclerView = (RecyclerView) findViewById(R.id.wifi_info_detail);
     }
@@ -90,6 +95,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (mWifiManager.isWifiEnabled()) {
+
+//                    if (Build.VERSION.SDK_INT >= 23 && !isLocationEnabled()) {
+//                        Settings.Secure.putInt(getContentResolver(), Settings.Secure.LOCATION_MODE, 1);
+//                    }
+
                     mScanResultList = mWifiManager.getScanResults();
                     sortList(mScanResultList);
                     mWifiInfoRecyclerView.getAdapter().notifyDataSetChanged();
@@ -102,11 +112,20 @@ public class MainActivity extends AppCompatActivity {
         mWifiInfoRecyclerView.setAdapter(new ScanResultAdapter());
     }
 
+
+    private boolean isLocationEnabled() {
+        return Settings.Secure.getInt(getContentResolver(), Settings.Secure.LOCATION_MODE,
+
+                Settings.Secure.LOCATION_MODE_OFF) != Settings.Secure.LOCATION_MODE_OFF;
+
+    }
+
     private void sortList(List<ScanResult> list) {
         TreeMap<String, ScanResult> map = new TreeMap<>();
         for (ScanResult scanResult : list) {
             map.put(scanResult.SSID, scanResult);
         }
+        Log.e("TAG", "sortList: " + list);
         list.clear();
         list.addAll(map.values());
     }
@@ -157,21 +176,21 @@ public class MainActivity extends AppCompatActivity {
         config.SSID = "\"" + ssid + "\"";
 
         WifiConfiguration tempConfig = isExist(ssid);
-        if(tempConfig != null) {
+        if (tempConfig != null) {
             mWifiManager.removeNetwork(tempConfig.networkId);
         }
 
-        if(type == WIFICIPHER_NOPASS) {
+        if (type == WIFICIPHER_NOPASS) {
             config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
-        } else if(type == WIFICIPHER_WEP) {
+        } else if (type == WIFICIPHER_WEP) {
             config.hiddenSSID = true;
-            config.wepKeys[0]= "\""+password+"\"";
+            config.wepKeys[0] = "\"" + password + "\"";
             config.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.OPEN);
             config.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.SHARED);
             config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
             config.wepTxKeyIndex = 0;
-        } else if(type == WIFICIPHER_WPA) {
-            config.preSharedKey = "\""+password+"\"";
+        } else if (type == WIFICIPHER_WPA) {
+            config.preSharedKey = "\"" + password + "\"";
             config.hiddenSSID = true;
             config.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.OPEN);
             config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.TKIP);
@@ -189,7 +208,7 @@ public class MainActivity extends AppCompatActivity {
         List<WifiConfiguration> configs = mWifiManager.getConfiguredNetworks();
 
         for (WifiConfiguration config : configs) {
-            if (config.SSID.equals("\""+ssid+"\"")) {
+            if (config.SSID.equals("\"" + ssid + "\"")) {
                 return config;
             }
         }
@@ -222,7 +241,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private static final String[] NEEDED_PERMISSIONS = new String[] {
+    private static final String[] NEEDED_PERMISSIONS = new String[]{
             Manifest.permission.ACCESS_COARSE_LOCATION,
             Manifest.permission.ACCESS_FINE_LOCATION
     };
@@ -261,7 +280,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
-            @NonNull String[] permissions, @NonNull int[] grantResults) {
+                                           @NonNull String[] permissions, @NonNull int[] grantResults) {
         boolean hasAllPermission = true;
 
         if (requestCode == PERMISSION_REQUEST_CODE) {
@@ -289,10 +308,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        //unregisterBroadcastReceiver();
+        unregisterBroadcastReceiver();
     }
 
     private BroadcastReceiver mBroadcastReceiver;
+
     private void registerBroadcastReceiver() {
         mBroadcastReceiver = new BroadcastReceiver() {
             @Override
@@ -305,9 +325,36 @@ public class MainActivity extends AppCompatActivity {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction("android.net.wifi.WIFI_AP_STATE_CHANGED");
         this.registerReceiver(mBroadcastReceiver, intentFilter);
+
+        IntentFilter filter = new IntentFilter();
+
+        //"android.net.wifi.STATE_CHANGE"
+        // "android.net.wifi.WIFI_STATE_CHANGED";
+        //"android.net.conn.CONNECTIVITY_CHANGE"
+        //"android.net.wifi.supplicant.CONNECTION_CHANGE"
+        // "android.net.wifi.supplicant.STATE_CHANGE"
+        filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        filter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
+        filter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
+
+//        filter.addAction(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION);
+//        filter.addAction(WifiManager.SUPPLICANT_STATE_CHANGED_ACTION);
+
+        receiver = new WiFiReceiver();
+        receiver.setCallBack(callBack);
+        filter.setPriority(2147483647);
+        registerReceiver(receiver, filter);
     }
 
     private void unregisterBroadcastReceiver() {
         this.unregisterReceiver(mBroadcastReceiver);
+//        this.unregisterReceiver(receiver);
     }
+
+    ICallBack callBack = new ICallBack() {
+        @Override
+        public void onOk() {
+            startActivity(new Intent(MainActivity.this, WebActivity.class));
+        }
+    };
 }

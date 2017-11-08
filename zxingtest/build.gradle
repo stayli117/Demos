@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "stark.a.is.zhang.zxingtest"
-        minSdkVersion 16
+        minSdkVersion 14
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
@@ -29,5 +29,6 @@ dependencies {
     })
     compile 'com.android.support:appcompat-v7:25.1.0'
     testCompile 'junit:junit:4.12'
-    compile 'com.google.zxing:core:3.3.0'
+//    compile 'com.google.zxing:zxing-parent:3.3.0'
+//    compile 'com.google.zxing:core:3.3.0'
 }

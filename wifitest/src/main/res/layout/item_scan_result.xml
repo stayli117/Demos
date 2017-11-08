@@ -7,6 +7,7 @@
     android:background="?android:attr/selectableItemBackground">
 
     <TextView
+        android:textColor="#000"
         android:id="@+id/ssid"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -15,6 +16,7 @@
         android:padding="20dp"/>
 
     <TextView
+        android:textColor="#000"
         android:id="@+id/level"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

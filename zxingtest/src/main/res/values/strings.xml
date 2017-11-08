@@ -3,4 +3,11 @@
 
     <string name="generate">Generate QRCode</string>
     <string name="scan">Scan QRCode</string>
+    <string name="qr_code_Scan">扫描二维码</string>
+    <string name="SweepingCode">扫描二维码添加账户</string>
+    <string name="turn_down_camera">请求摄像头权限被拒绝</string>
+    <string name="data_upload_success">数据上传成功</string>
+    <string name="hand_add_app">手动添加应用</string>
+    <string name="confirm">确认</string>
+    <string name="sotp_phone_scan">二维码登录</string>
 </resources>

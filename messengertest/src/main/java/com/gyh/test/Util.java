@@ -1,4 +1,4 @@
-package stark.a.is.zhang.messengertest;
+package com.gyh.test;
 
 import android.app.ActivityManager;
 import android.content.Context;
